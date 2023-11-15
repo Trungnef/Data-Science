@@ -1,64 +1,63 @@
-# DataScience
-Final Examination
+# Data Science Final Examination
 
-## Thông tin 
-- Inf:
-  - Bùi Thế Trung - 21110108 - 21110108@st.vju.ac.vn
+## Information
+- Student: Bùi Thế Trung - 21110108 - 21110108@st.vju.ac.vn
+
+## Problem Statement
+
+- The stock market is volatile and depends on various external factors.
+- In addition to external factors, the influence of past stock prices also significantly affects the future.
+- Identifying this influence contributes to predicting future stock prices.
+
+## Question
+
+- Predict the stock price of Apple company for the next n days (n > 0) based on historical trading data.
+
+## Solution
+
+### Idea
+- Learn about LSTM [here](https://dominhhai.github.io/vi/2017/10/what-is-lstm/).
+- Use a Long Short-Term Memory (LSTM) network to analyze the relationship between the past and the future.
+- Reasons for using LSTM:
+  - LSTM and RNN, in general, are designed to handle sequential data.
+  - Each neuron in the LSTM network has three gates and a cell state.
   
-## Đặt vấn đề
+  ![LSTM Network Illustration](./img/lstmNet.png)
+    - `cell state`: This is where a cell can store information (partly related to information processed earlier, partly related to the input data at each cell).
+    - `forget gate`: Decides what information should be discarded or kept (input to this gate includes input data and information from the previous cell).
+    - `input gate`: Filters important information from the input data and the previous cell's information, updating this information into the `cell state`.
+    - `output gate`: Decides the input for the next cell by further filtering information from `input, cell state, and information received from the previous cell`.
 
-- Thị trường chứng khoán biến động thường xuyên và phụ thuộc vào rất nhiều yếu tố ngoại cảnh
-- Ngoài các yếu tố ngoại cảnh, sự ảnh hưởng của giá chứng khoán trong quá khứ cũng tác động rất nhiều đến tương lai
-- Tìm ra sự tác động này giúp một phần trong việc dự đoán giá chứng khoán
+### Execution
 
-## Câu hỏi
-- Dự đoán giá chứng khoán của công ty Apple trong n ngày tiếp theo (n > 0) dựa theo lịch sử giao dịch
+- Data Collection
+  - Use the `DataReader` library from `Pandas`.
+  - Install: `pip install pandas-datareader`.
 
-## Giải quyết
+- Data Preprocessing
+  - Keep only the `Adj Close Price` column for prediction.
+  - Scale the data using `sklearn.preprocessing.MinMaxScaler`.
+  - Transform the data into a format that LSTM can read (data in 3D format).
+    - `sequence`: Total input data.
+    - `time_step`: Number of input data needed for one prediction.
+    - `feature`: Number of data samples for one output (calculated from the `time_step` input data above).
 
-### Ý tưởng
-- Tìm hiểu LSTM tại [đây](https://dominhhai.github.io/vi/2017/10/what-is-lstm/) và [đây](https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21)
-- Sử dụng mạng Long short-term memory để phân tích sự liên hệ giữa quá khứ và tương lai
-- Lý do sử dụng LSTM
-  - Mạng LSTM hay RNN nói chung được thiết kế ra để xử lý dữ liệu tuần tự: Dữ liệu mà mỗi mẫu trong đó xuất hiện theo thứ tự (ví dụ như thứ tự giá chứng khoán xuất hiện theo thời gian, thứ tự các từ trong câu, thứ tự các nốt nhạc trong 1 bản nhạc)
-  - Mỗi nơ-ron của mạng LSTM được thiết kế gồm 3 cổng và 1 thông tin gọi là `cell state`
-    
-  ![Minh họa mạng LSTM](./img/lstmNet.png)
-    - `cell state`: Đây là nơi mà một cell dùng để ghi nhớ thông tin (các thông tin này một phần nào đó liên quan đến các thông tin đã xử lý trước đó, phần khác liên quan đến dữ liệu input tại mỗi cell)
-    - `forget gate`: Cổng này quyết định việc một thông tin nên được dữ lại hay bị quên đi (đầu vào của cổng này bao gồm dữ liệu input và thông tin từ cell trước đó của mạng)
-    - `input gate`: Tại đây chắt lọc các thông tin quan trọng của dữ liệu đầu vào và thông tin từ cell trước đó. Kế đến, nó cập nhật các thông tin này vào `cell state`
-    - `output gate`: Cổng này quyết định đầu vào của cell tiếp theo bằng cách tiếp tục chắt lọc thông tin lấy từ `input, cell state và thông tin nhận được từ cell trước đó`
+- Build Model
+  - Use `LSTM` from the `keras` library (install: `pip install Keras`).
+  - The model consists of one LSTM layer.
+    - For predicting one day
+      - `time_step = 60`: Use the past 60 days for input data for one prediction.
+      - `feature = 1`: Output data is the price of the next day.
+    - For predicting 30 days
+      - `time_step = 1500`: Use the past 1500 days for input data for one prediction.
+      - `feature = 30`: Output data is the stock price for the next 30 days.
 
-### Thực thi
-
-- Thu thập dữ liệu
-  - Sử dụng thư viện `DataReader` của `Pandas`
-  - Cài đặt: `pip install pandas-datareader`
-
-- Tiền xử lý
-  - Chỉ để lại cột `Adj Close Price` để phục vụ cho việc dự đoán
-  - Scale dữ liệu của cột này bằng `sklearn.preprocessing.MinMaxScaler`
-  - Chuyển thành dữ liệu mà LSTM có thể đọc được (dữ liệu ở dạng 3D)
-    - `sequence`: tổng số dữ liệu đầu vào
-    - `time_step`: số dữ liệu input cần cho 1 lần dữ đoán
-    - `feature`: số mẫu dữ liệu của 1 output (được tính từ `time_step` dữ liệu input bên trên)
-
-- Build model
-  - Sử dụng `LSTM` của thư viện `keras` (cài đặt: `pip install Keras`)
-  - Model gồm 1 lớp LSTM
-    - Đối với việc dự đoán 1 ngày
-      - `time_step = 60`: dùng 60 ngày trước đó cho dữ liệu đầu vào của 1 dữ đoán
-      - `feature = 1`: dữ liệu đầu ra là giá của 1 ngày tiếp theo
-    - Đối với việc dự đoán 30 ngày
-      - `time_step = 1500`: dùng 1500 ngày trước đó cho dữ liệu đầu vào của 1 dự đoán
-      - `feature = 30`: dữ liệu đầu ra là giá chứng khoán của 30 ngày tiếp theo
-
-- Tiến hành dự đoán
-  - Với việc dự đoán 1 ngày: tập test có 2122 giá trị
-  - Với việc dự đoán 30 ngày: tập test có 30 giá trị (nếu nhiều hơn thì sẽ phải xử lý việc các dữ liệu output "gối đầu lên nhau")
+- Prediction
+  - For predicting one day: the test set contains 2122 values.
+  - For predicting 30 days: the test set contains 30 values (if more, handling overlapping predictions is required).
 
 ## Demo
-  - Dự đoán giá chứng khoán 1 ngày tiếp theo (tập dữ đoán bao gồm 2122 giá trị): `mse = 26.652150430735873`
-  ![Dự đoán giá chứng khoán 1 ngày tiếp theo](./img/predict1Day.png)
-  - Dự đoán giá chứng khoán 30 ngày tiếp theo (tập dự đoán bao gồm 30 giá trị): `mse = 16.084394047657305`
-  ![Dự đoán giá chứng khoán 30 ngày tiếp theo](./img/predict30Days.png)
+  - Predicting the stock price for the next 1 day (test set includes 2122 values): `MSE = 26.652150430735873`
+  ![Predicting Stock Price for the Next 1 Day](./img/predict1Day.png)
+  - Predicting the stock price for the next 30 days (test set includes 30 values): `MSE = 16.084394047657305`
+  ![Predicting Stock Price for the Next 30 Days](./img/predict30Days.png)
