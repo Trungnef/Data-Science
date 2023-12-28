@@ -22,7 +22,7 @@
   - LSTM and RNN, in general, are designed to handle sequential data.
   - Each neuron in the LSTM network has three gates and a cell state.
   
-  ![LSTM Network Illustration](./img/lstm.webp)
+  ![LSTM Network Illustration](./img/LSTM.jpg)
     - `cell state`: This is where a cell can store information (partly related to information processed earlier, partly related to the input data at each cell).
     - `forget gate`: Decides what information should be discarded or kept (input to this gate includes input data and information from the previous cell).
     - `input gate`: Filters important information from the input data and the previous cell's information, updating this information into the `cell state`.
